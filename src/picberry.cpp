@@ -42,6 +42,7 @@
 #include "common.h"
 #include "devices/dspic33f.h"
 #include "devices/dspic33e.h"
+#include "devices/dspic33ck.h"
 #include "devices/pic10f322.h"
 #include "devices/pic18fj.h"
 #include "devices/pic24fjxxxga0xx.h"
@@ -242,6 +243,8 @@ int main(int argc, char *argv[])
             pic = new dspic33e(SF_DSPIC33E);
         else if(strcmp(family,"pic24fj") == 0)
             pic = new dspic33e(SF_PIC24FJ);
+        else if (strcmp(family, "dspic33ck") == 0)
+            pic = new dspic33ck();
         else if(strcmp(family,"pic10f322") == 0)
             pic = new pic10f322();
         else if(strcmp(family,"pic18fj") == 0)
@@ -524,6 +527,7 @@ enum srv_families : char{
     SRV_FAM_PIC32MX3 = '6',
     SRV_FAM_PIC32MZ  = '7',
     SRV_FAM_PIC32MK  = '8'
+    SRV_FAM_PIC33CK = '9'
 };
 
 void server_mode(int port){
@@ -626,6 +630,10 @@ void server_mode(int port){
                             case SRV_FAM_DSPIC33F:
                                 cerr << "DSPIC33F" << endl;
                                 pic = new dspic33f();
+                                break;
+                            case SRV_FAM_DSPIC33CK:
+                                cerr << "DSPIC33CK" << endl;
+                                pic = new dspic33ck();
                                 break;
                             case SRV_FAM_PIC18FJ:
                                 cerr << "PIC18FJ" << endl;
