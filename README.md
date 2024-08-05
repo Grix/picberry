@@ -144,6 +144,7 @@ To compile it, just launch `qmake` and then `make` in the *remote_gui* folder.
 - [PIC12(L)F1822/PIC16(L)F182X Flash Programming Specification](http://ww1.microchip.com/downloads/en/DeviceDoc/41390D.pdf)
 - [PIC18F2XJXX/4XJXX Family Programming Specification](http://ww1.microchip.com/downloads/en/DeviceDoc/39687e.pdf)
 - [PIC32 Flash Programming Specification](http://ww1.microchip.com/downloads/en/DeviceDoc/60001145S.pdf)
+- [dsPIC33CK64/32 Flash Programming Specification](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/ProgrammingSpecifications/70005352c.pdf)
 
 ## Licensing
 

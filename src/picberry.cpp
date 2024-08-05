@@ -278,6 +278,7 @@ int main(int argc, char *argv[])
             cerr << "ERROR: PIC family not correctly chosen." << endl;
             cerr << "Available families:" << endl
                  << "- dspic33e" << endl
+                 << "- dspic33ck" << endl
                  << "- pic24fj" << endl
                  << "- pic24fjxxxga0xx" << endl
                  << "- pic24fjxxxga3xx" << endl
@@ -478,6 +479,7 @@ void usage(void)
             "\n"
             "       dspic33e    \n"
             "       dspic33f    \n"
+            "       dspic33ck    \n"
             "       pic10f322   \n"
             "       pic18fj     \n"
             "       pic24fj     \n"

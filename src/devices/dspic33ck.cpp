@@ -174,10 +174,7 @@ void dspic33ck::enter_program_mode(void)
 	GPIO_CLR(pic_data);
 	delay_us(DELAY_P19);
 	GPIO_SET(pic_mclr);
-	if(subfamily == SF_DSPIC33E)
-		delay_us(DELAY_P7_DSPIC33E);
-	else if(subfamily == SF_PIC24FJ)
-		delay_us(DELAY_P7_PIC24FJ);
+	delay_us(DELAY_P7);
 
 	/* idle for 5 clock cycles */
 	for (i = 0; i < 5; i++) {
@@ -208,6 +205,8 @@ bool dspic33ck::read_device_id(void)
 
 	bool found = 0;
 
+	uint32_t addr = 0xFF0000;
+
 	send_nop();
 	send_nop();
 	send_nop();
@@ -216,30 +215,28 @@ bool dspic33ck::read_device_id(void)
 	send_nop();
 	send_nop();
 
-	send_cmd(0x200FF0);
+	send_cmd(0x200000 | ((addr & 0x00FF0000) >> 12));	// MOV #<Address23:16>, W0
+	send_cmd(0x20FCC7);
 	send_cmd(0x8802A0);
-	send_cmd(0x200006);
-	send_cmd(0x20F887);
-	send_nop();
+	send_cmd(0x200006 | ((addr & 0x0000FFFF) << 4));	// MOV #<Address15:0>, W6
 
-	send_cmd(0xBA0BB6);
+	send_nop();
+	send_cmd(0xBA8B96);
 	send_nop();
 	send_nop();
 	send_nop();
 	send_nop();
 	send_nop();
 	device_id = read_data();
+	send_cmd(0xBA0B96);
+	send_nop();
+	send_nop();
+	send_nop();
+	send_nop();
+	send_nop();
+	device_rev = read_data()
 
-	send_cmd(0xBA0BB6);
-	send_nop();
-	send_nop();
-	send_nop();
-	send_nop();
-	send_nop();
-	device_rev = read_data();
-	
-	reset_pc();
-	send_nop();
+	fprintf(stderr, "devid: 0x%02x , devrev: 0x%02x\n", device_id, device_rev);
 
 	for (unsigned short i=0;i < sizeof(piclist)/sizeof(piclist[0]);i++){
 
@@ -247,7 +244,16 @@ bool dspic33ck::read_device_id(void)
 
 			strcpy(name, piclist[i].name);
 			mem.code_memory_size = piclist[i].code_memory_size;
-			mem.program_memory_size = 0x0F80018;
+			if (mem.code_memory_size == 0x005EFF)
+			{
+				subfamily = SF_DSPIC33CK32;
+				mem.program_memory_size = 0x005FFF;
+			}
+			else
+			{
+				subfamily = SF_DSPIC33CK64;
+				mem.program_memory_size = 0x00AFFF;
+			}
 			mem.location = (uint16_t*) calloc(mem.program_memory_size,sizeof(uint16_t));
 			mem.filled = (bool*) calloc(mem.program_memory_size,sizeof(bool));
 			found = 1;
@@ -451,6 +457,7 @@ void dspic33ck::bulk_erase(void)
 }
 
 /* Read PIC memory and write the contents to a .hex file */
+// todo
 void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 {
 	uint32_t addr, startaddr, stopaddr;
@@ -785,11 +792,11 @@ void dspic33ck::write(char *infile)
 	send_cmd(0x200FAC);
 	send_cmd(0x8802AC);
 
-	addr = 0x00005F00; // +4?
+	addr = 0x00005F00;
 	if (subfamily == SF_DSPIC33CK64)
 		addr = 0x0000AF00;
 
-	for(i=0; i<15; i+=2, addr+=4){
+	for(i=0; i<15; i+=1, addr+=4){
 
 		if (i == 1)
 			addr += 12; // jump to 0x10 offset after first register
@@ -861,9 +868,11 @@ void dspic33ck::write(char *infile)
 				send_nop();
 			} while((nvmcon & 0x8000) == 0x8000);
 
-			if(flags.debug)
-				fprintf(stderr,"\n - %s set to 0x%01x",
-						regname[i], mem.location[addr]);
+			if (flags.debug)
+			{
+				fprintf(stderr, "\n - %s set to 0x%01x, 0x%01x, 0x%01x, 0x%01x",
+					regname[i], mem.location[addr], mem.location[addr+1], mem.location[addr+2], mem.location[addr+3]);
+			}
 		}
 		else if(flags.debug)
 				fprintf(stderr,"\n - %s left unchanged", regname[i]);
@@ -875,7 +884,6 @@ void dspic33ck::write(char *infile)
 	delay_us(100000);
 
 	/* VERIFY CODE MEMORY */
-	// todo
 	if(!flags.noverify){
 		if(!flags.debug) cerr << "[ 0%]";
 		if(flags.client) fprintf(stdout, "@000");
@@ -957,7 +965,7 @@ void dspic33ck::write(char *infile)
 
 			/* read six data words (16 bits each) */
 			for(i=0; i<6; i++){
-				send_cmd(0x887C40 + i);
+				send_cmd(0x887E60 + i);
 				send_nop();
 				raw_data[i] = read_data();
 				send_nop();
@@ -1014,44 +1022,50 @@ void dspic33ck::write(char *infile)
 /* write to screen the configuration registers, without saving them anywhere */
 void dspic33ck::dump_configuration_registers(void)
 {
-	// todo
-	const char *regname[] = {"FGS","FOSCSEL","FOSC","FWDT","FPOR",
-							"FICD","FAS","FUID0"};
+	const char* regname[] = { "FSEC","FBSLIM","FSIGN","FOSCSEL","FOSC","FWDT","FPOR","FICD","FDMTIVTL","FDMTIVTH","FDMTCNTL","FDMTCNTH","FDMT","FDEVOPT","FALTREG" };
 
 	cerr << endl << "Configuration registers:" << endl << endl;
 
-	send_nop();
-	send_nop();
-	send_nop();
-	reset_pc();
-	send_nop();
-	send_nop();
-	send_nop();
+	uint32_t addr = 0x00005F00;
+	if (subfamily == SF_DSPIC33CK64)
+		addr = 0x0000AF00;
 
-	send_cmd(0x200F80);
-	send_cmd(0x8802A0);
-	send_cmd(0x200046);
-	send_cmd(0x20F887);
-	send_nop();
+	for (unsigned short i = 0; i < 15; addr += 4, i += 1) {
 
-	for(unsigned short i=0; i<8; i++){
-		send_cmd(0xBA0BB6);
+		if (i == 1)
+			addr += 12; // jump to offset 0x10 after first config value
+
+		send_nop();
+		send_nop();
+		send_nop();
+		reset_pc();
+		send_nop();
+		send_nop();
+		send_nop();
+
+		send_cmd(0x200000 | ((addr & 0x00FF0000) >> 12));	// MOV #<Address23:16>, W0
+		send_cmd(0x20FCC7);
+		send_cmd(0x8802A0);
+		send_cmd(0x200006 | ((addr & 0x0000FFFF) << 4));	// MOV #<Address15:0>, W6
+
+		send_nop();
+		send_cmd(0xBA8B96);
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
-		fprintf(stderr," - %s: 0x%02x\n", regname[i], read_data());
+		uint16_t data_1 = read_data();
+		send_cmd(0xBA0B96);
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		uint16_t data_2 = read_data()
+		fprintf(stderr, " - %s: 0x%02x , 0x%02x\n", regname[i], data_1, data_2);
+
+		cerr << endl;
 	}
-
-	cerr << endl;
-
-	send_nop();
-	send_nop();
-	send_nop();
-	reset_pc();
-	send_nop();
-	send_nop();
-	send_nop();
 }
 
