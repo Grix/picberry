@@ -28,12 +28,12 @@
 #define PORTOFFSET         0
 
 /* GPIO setup macros. Always use GPIO_IN(x) before using GPIO_OUT(x) */
-#define GPIO_IN(g)		*(gpio + 0x04) &= ~(1 << (g & 0xFF))
-#define GPIO_OUT(g)		*(gpio + 0x04) |= (1 << (g & 0xFF))
+#define GPIO_IN(g)		*(gpio + (0x04 / 4)) &= ~(1 << (g & 0xFF))
+#define GPIO_OUT(g)		*(gpio + (0x04 / 4)) |= (1 << (g & 0xFF))
 
-#define GPIO_SET(g)		*(gpio + 0x00) |= (1 << (g & 0xFF))
-#define GPIO_CLR(g)		*(gpio + 0x00) &= ~(1 << (g & 0xFF))
-#define GPIO_LEV(g)		((*(gpio + 0x50) >> (g & 0xFF)) & 1)
+#define GPIO_SET(g)		*(gpio + (0x00 / 4)) |= (1 << (g & 0xFF))
+#define GPIO_CLR(g)		*(gpio + (0x00 / 4)) &= ~(1 << (g & 0xFF))
+#define GPIO_LEV(g)		((*(gpio + (0x50 / 4)) >> (g & 0xFF)) & 1)
 
 /* default GPIO <-> PIC connections */
 #define DEFAULT_PIC_CLK    16    // PGC - Output
