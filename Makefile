@@ -13,6 +13,7 @@ MKDIR = mkdir -p
 
 DEVICES = $(BUILDDIR)/devices/dspic33e.o \
 		  $(BUILDDIR)/devices/dspic33f.o \
+		  $(BUILDDIR)/devices/dspic33ck.o \
 		  $(BUILDDIR)/devices/pic10f322.o \
 		  $(BUILDDIR)/devices/pic18fj.o \
 		  $(BUILDDIR)/devices/pic24fjxxxga0xx.o \
@@ -28,6 +29,7 @@ raspberrypi: CFLAGS += -DBOARD_RPI
 raspberrypi2: CFLAGS += -DBOARD_RPI2
 raspberrypi4: CFLAGS += -DBOARD_RPI4
 am335x: CFLAGS += -DBOARD_AM335X
+rk3308: CFLAGS += -DBOARD_RK3308
 
 default:
 	 @echo "Please specify a target with 'make raspberrypi', 'make a10' or 'make am335x'."
@@ -37,6 +39,7 @@ raspberrypi2: prepare picberry
 raspberrypi4: prepare picberry
 a10: prepare picberry
 am335x: prepare picberry gpio_test
+rk3308: prepare picberry gpio_test
 
 prepare:
 	$(MKDIR) $(BUILDDIR)/devices

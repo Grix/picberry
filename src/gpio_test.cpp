@@ -90,7 +90,11 @@ int main(int argc, char *argv[])
     }
     
     cout << "Testing GPIO " << tested_gpio_port << (tested_gpio&0xFF) << endl;
+#ifdef OFFSET
     cout << "BASE ADDRESS " << hex << GPIO_BASE << " + OFFSET " << hex << OFFSET(tested_gpio) << " = FINAL ADDRESS " << hex << GPIO_BASE + OFFSET(tested_gpio) << endl;
+#else
+    cout << "BASE ADDRESS " << hex << GPIO_BASE << endl;
+#endif
 
     setup_io();
     
