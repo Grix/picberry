@@ -526,8 +526,8 @@ enum srv_families : char{
     SRV_FAM_PIC32MX2 = '5',
     SRV_FAM_PIC32MX3 = '6',
     SRV_FAM_PIC32MZ  = '7',
-    SRV_FAM_PIC32MK  = '8'
-    SRV_FAM_PIC33CK = '9'
+    SRV_FAM_PIC32MK  = '8',
+    SRV_FAM_PIC33CK  = '9'
 };
 
 void server_mode(int port){
