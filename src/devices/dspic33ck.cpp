@@ -234,7 +234,7 @@ bool dspic33ck::read_device_id(void)
 	send_nop();
 	send_nop();
 	send_nop();
-	device_rev = read_data()
+	device_rev = read_data();
 
 	fprintf(stderr, "devid: 0x%02x , devrev: 0x%02x\n", device_id, device_rev);
 
@@ -646,8 +646,7 @@ void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 /* Write contents of the .hex file to the PIC */
 void dspic33ck::write(char *infile)
 {
-	uint16_t i,j,p;
-	uint16_t k;
+	uint16_t i,j,k;
 	bool skip;
 	uint32_t data[8],raw_data[6];
 	uint32_t addr = 0;
@@ -1062,7 +1061,7 @@ void dspic33ck::dump_configuration_registers(void)
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_2 = read_data()
+		uint16_t data_2 = read_data();
 		fprintf(stderr, " - %s: 0x%02x , 0x%02x\n", regname[i], data_1, data_2);
 
 		cerr << endl;
