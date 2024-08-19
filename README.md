@@ -125,6 +125,12 @@ for BeagleBone Black (AM335x):
 	PGC  <-> GPIO60 (P9.12)
 	PGD  <-> GPIO49 (P9.23)
 	MCLR <-> GPIO48 (P9.15)
+	
+for Rock Pi S / Rock S0:
+
+	PGC  <-> GPIO2_C0
+	PGD  <-> GPIO2_B2
+	MCLR <-> GPIO2_A4
 
 
 ### Remote GUI

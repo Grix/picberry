@@ -201,8 +201,6 @@ void dspic33ck::exit_program_mode(void)
 /* read the device ID and revision; returns only the id */
 bool dspic33ck::read_device_id(void)
 {
-	// TODO
-
 	bool found = 0;
 
 	uint32_t addr = 0xFF0000;
@@ -227,16 +225,16 @@ bool dspic33ck::read_device_id(void)
 	send_nop();
 	send_nop();
 	send_nop();
-	device_id = read_data();
+	device_rev = read_data();
 	send_cmd(0xBA0B96);
 	send_nop();
 	send_nop();
 	send_nop();
 	send_nop();
 	send_nop();
-	device_rev = read_data();
+	device_id = read_data();
 
-	fprintf(stderr, "devid: 0x%02x , devrev: 0x%02x\n", device_id, device_rev);
+	fprintf(stderr, "devid: 0x%04x , devrev: 0x%04x\n", device_id, device_rev);
 
 	for (unsigned short i=0;i < sizeof(piclist)/sizeof(piclist[0]);i++){
 
@@ -1054,15 +1052,15 @@ void dspic33ck::dump_configuration_registers(void)
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_1 = read_data();
+		uint16_t data_2 = read_data();
 		send_cmd(0xBA0B96);
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_2 = read_data();
-		fprintf(stderr, " - %s: 0x%02x , 0x%02x\n", regname[i], data_1, data_2);
+		uint16_t data_1 = read_data();
+		fprintf(stderr, " - %s: 0x%04x , 0x%04x\n", regname[i], data_1, data_2);
 
 		cerr << endl;
 	}

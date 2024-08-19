@@ -54,5 +54,11 @@ class dspic33ck : public Pic{
 								  {0x8E02, "dsPIC33CK32MP105", 0x005EFF},
 								  {0x8E10, "dsPIC33CK64MP102", 0x00AEFF},
 								  {0x8E11, "dsPIC33CK64MP103", 0x00AEFF},
-								  {0x8E12, "dsPIC33CK64MP105", 0x00AEFF}};
+								  {0x8E12, "dsPIC33CK64MP105", 0x00AEFF},
+								  {0x9900, "dsPIC33CK32MC102", 0x005EFF},
+								  {0x9901, "dsPIC33CK32MC103", 0x005EFF},
+								  {0x9902, "dsPIC33CK32MC105", 0x005EFF},
+								  {0x9910, "dsPIC33CK64MC102", 0x00AEFF},
+								  {0x9911, "dsPIC33CK64MC103", 0x00AEFF},
+								  {0x9912, "dsPIC33CK64MC105", 0x00AEFF} };
 };

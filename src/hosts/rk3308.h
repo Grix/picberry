@@ -20,7 +20,7 @@
  */
 
 // RK3308, used in Rock Pi S, Rock S0 etc. 
-// NB: Mapped to GPIO2, pin index must be 0 to 31
+// NB: Mapped to GPIO2, pin index must be 0 to 31. A0 = 0, A7 = 7, B0 = 8, B7 = 15, C0 = 16, etc...
 
 /* GPIO registers address */
 #define GPIO_BASE          (0xff240000) /* GPIO controller */
@@ -36,6 +36,6 @@
 #define GPIO_LEV(g)		((*(gpio + (0x50 / 4)) >> (g & 0xFF)) & 1)
 
 /* default GPIO <-> PIC connections */
-#define DEFAULT_PIC_CLK    16    // PGC - Output
-#define DEFAULT_PIC_DATA   10    // PGD - I/O 
-#define DEFAULT_PIC_MCLR   4	 // MCLR - Output 
+#define DEFAULT_PIC_CLK    16    // GPIO2_C0 - PGC - Output
+#define DEFAULT_PIC_DATA   10    // GPIO2_B2 - PGD - I/O 
+#define DEFAULT_PIC_MCLR   4	 // GPIO2_A4 - MCLR - Output 

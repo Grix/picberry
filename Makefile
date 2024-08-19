@@ -32,7 +32,7 @@ am335x: CFLAGS += -DBOARD_AM335X
 rk3308: CFLAGS += -DBOARD_RK3308
 
 default:
-	 @echo "Please specify a target with 'make raspberrypi', 'make a10' or 'make am335x'."
+	 @echo "Please specify a target with 'make raspberrypi', 'make a10', 'make am335x', or 'make rk3308'."
 
 raspberrypi: prepare picberry
 raspberrypi2: prepare picberry
