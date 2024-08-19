@@ -49,7 +49,7 @@ class dspic33ck : public Pic{
 		* DEVICES SECTION
 		*                       ID       NAME           	  MEMSIZE
 		*/
-		pic_device piclist[6] = {{0x8E00, "dsPIC33CK32MP102", 0x005EFF},
+		pic_device piclist[12] = {{0x8E00, "dsPIC33CK32MP102", 0x005EFF},
 								  {0x8E01, "dsPIC33CK32MP103", 0x005EFF},
 								  {0x8E02, "dsPIC33CK32MP105", 0x005EFF},
 								  {0x8E10, "dsPIC33CK64MP102", 0x00AEFF},
