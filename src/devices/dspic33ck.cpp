@@ -1052,15 +1052,15 @@ void dspic33ck::dump_configuration_registers(void)
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_2 = read_data();
+		uint16_t data_1 = read_data();
 		send_cmd(0xBA0B96);
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_1 = read_data();
-		fprintf(stderr, " - %s: 0x%04x , 0x%04x\n", regname[i], data_1, data_2);
+		uint16_t data_2 = read_data();
+		fprintf(stderr, " - %s: 0x%04x%04x\n", regname[i], data_1, data_2);
 
 		cerr << endl;
 	}
