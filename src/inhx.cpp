@@ -56,7 +56,7 @@ unsigned int read_inhx(char *infile, memory *mem, uint32_t offset)
 
     fp = fopen(infile, "r");
     if (fp == NULL) {
-        cerr << "Error: cannot open source file " << infile << endl;
+        cerr << "Error: cannot open source file " << infile << " : " << errno << endl;
         return 0;
     }
 

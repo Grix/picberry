@@ -244,14 +244,21 @@ bool dspic33ck::read_device_id(void)
 			mem.code_memory_size = piclist[i].code_memory_size;
 			if (mem.code_memory_size == 0x005EFF)
 			{
-				subfamily = SF_DSPIC33CK32;
 				mem.program_memory_size = 0x005FFF;
 			}
 			else
 			{
-				subfamily = SF_DSPIC33CK64;
 				mem.program_memory_size = 0x00AFFF;
 			}
+			if (i <= 5)
+			{
+				subfamily = SF_DSPIC33CKxxMP;
+			}
+			else
+			{
+				subfamily = SF_DSPIC33CKxxMC;
+			}
+
 			mem.location = (uint16_t*) calloc(mem.program_memory_size,sizeof(uint16_t));
 			mem.filled = (bool*) calloc(mem.program_memory_size,sizeof(bool));
 			found = 1;
@@ -428,7 +435,10 @@ void dspic33ck::bulk_erase(void)
 	send_cmd(0x8846B1);
 	send_cmd(0x200AA1);
 	send_cmd(0x8846B1);
-	send_cmd(0xA8F1A1);
+	if (subfamily == SF_DSPIC33CKxxMP)
+		send_cmd(0xA8F1A1);
+	else //if (subfamily == SF_DSPIC33CKxxMC)
+		send_cmd(0xA8E8D1);
 	send_nop();
 	send_nop();
 	send_nop();
@@ -437,6 +447,7 @@ void dspic33ck::bulk_erase(void)
 
 	/* wait while the erase operation completes */
 	do{
+		send_nop();
 		send_cmd(0x804680);
 		send_nop();		
 		send_cmd(0x887E60);
@@ -455,7 +466,7 @@ void dspic33ck::bulk_erase(void)
 }
 
 /* Read PIC memory and write the contents to a .hex file */
-// todo
+// TODO
 void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 {
 	uint32_t addr, startaddr, stopaddr;
@@ -547,7 +558,7 @@ void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 
 		/* read six data words (16 bits each) */
 		for(i=0; i<6; i++){
-			send_cmd(0x887C40 + i);
+			send_cmd(0x887E60 + i);
 			send_nop();
 			raw_data[i] = read_data();
 			send_nop();
@@ -598,6 +609,10 @@ void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 		/* TODO: checksum */
 	}
 
+
+	//addr = 0x00F80004;
+
+	/*
 	send_nop();
 	send_nop();
 	send_nop();
@@ -612,9 +627,7 @@ void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 	send_cmd(0x20F887);
 	send_nop();
 
-	addr = 0x00F80004;
-
-	for(i=0; i<8; i++){
+	for (i = 0; i<8; i++) {
 		send_cmd(0xBA0BB6);
 		send_nop();
 		send_nop();
@@ -626,6 +639,60 @@ void dspic33ck::read(char *outfile, uint32_t start, uint32_t count)
 			mem.location[addr+2*i] = data[0];
 			mem.filled[addr+2*i] = 1;
 		}
+	}*/
+
+	addr = 0x00005F00;
+	if (mem.program_memory_size == 0x00AFFF)
+		addr = 0x0000AF00;
+
+	for (unsigned short i = 0; i < 15; addr += 4, i += 1) {
+
+		if (i == 1)
+			addr += 12; // jump to offset 0x10 after first config value
+
+		send_nop();
+		send_nop();
+		send_nop();
+		reset_pc();
+		send_nop();
+		send_nop();
+		send_nop();
+
+		send_cmd(0x200000 | ((addr & 0x00FF0000) >> 12));	// MOV #<Address23:16>, W0
+		send_cmd(0x20FCC7);
+		send_cmd(0x8802A0);
+		send_cmd(0x200006 | ((addr & 0x0000FFFF) << 4));	// MOV #<Address15:0>, W6
+
+		send_nop();
+		send_cmd(0xBA8B96);
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		uint16_t data_1 = read_data() | 0xFF00;
+
+		if (data_1 != 0xFFFF) {
+			mem.location[addr] = data_1;
+			mem.filled[addr] = 1;
+		}
+
+		send_cmd(0xBA0B96);
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		send_nop();
+		uint16_t data_2 = read_data();
+
+		if (data_2 != 0xFFFF) {
+			mem.location[addr + 1] = data_2;
+			mem.filled[addr + 1] = 1;
+		}
+
+		//fprintf(stderr, " - %s: 0x%04x%04x\n", regname[i], data_1, data_2);
+
+		cerr << endl;
 	}
 
 	send_nop();
@@ -734,7 +801,10 @@ void dspic33ck::write(char *infile)
 		send_cmd(0x8846B1);
 		send_cmd(0x200AA1);
 		send_cmd(0x8846B1);
-		send_cmd(0xA8F1A1);
+		if (subfamily == SF_DSPIC33CKxxMP)
+			send_cmd(0xA8F1A1);
+		else //if (subfamily == SF_DSPIC33CKxxMC)
+			send_cmd(0xA8E8D1);
 		send_nop();
 		send_nop();
 		send_nop();
@@ -790,7 +860,7 @@ void dspic33ck::write(char *infile)
 	send_cmd(0x8802AC);
 
 	addr = 0x00005F00;
-	if (subfamily == SF_DSPIC33CK64)
+	if (mem.program_memory_size == 0x00AFFF)
 		addr = 0x0000AF00;
 
 	for(i=0; i<15; i+=1, addr+=4){
@@ -839,7 +909,10 @@ void dspic33ck::write(char *infile)
 			send_cmd(0x8846B1);
 			send_cmd(0x200AA1);
 			send_cmd(0x8846B1);
-			send_cmd(0xA8F1A1);
+			if (subfamily == SF_DSPIC33CKxxMP)
+				send_cmd(0xA8F1A1);
+			else //if (subfamily == SF_DSPIC33CKxxMC)
+				send_cmd(0xA8E8D1);
 			send_nop();
 			send_nop();
 			send_nop();
@@ -1024,7 +1097,7 @@ void dspic33ck::dump_configuration_registers(void)
 	cerr << endl << "Configuration registers:" << endl << endl;
 
 	uint32_t addr = 0x00005F00;
-	if (subfamily == SF_DSPIC33CK64)
+	if (mem.program_memory_size == 0x00AFFF)
 		addr = 0x0000AF00;
 
 	for (unsigned short i = 0; i < 15; addr += 4, i += 1) {
@@ -1052,7 +1125,7 @@ void dspic33ck::dump_configuration_registers(void)
 		send_nop();
 		send_nop();
 		send_nop();
-		uint16_t data_1 = read_data();
+		uint16_t data_1 = read_data() | 0xFF00;
 		send_cmd(0xBA0B96);
 		send_nop();
 		send_nop();

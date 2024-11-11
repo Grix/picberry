@@ -25,8 +25,8 @@
 
 using namespace std;
 
-#define SF_DSPIC33CK32		0x00
-#define SF_DSPIC33CK64		0x01
+#define SF_DSPIC33CKxxMC		0x00
+#define SF_DSPIC33CKxxMP		0x01
 
 class dspic33ck : public Pic{
 

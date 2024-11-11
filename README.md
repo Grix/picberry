@@ -13,15 +13,16 @@ You should have received a copy of the GNU General Public License along with thi
 
 _picberry_ is a PIC programmer using GPIOs that doesn't require additional programming hardware.
 
-It theorically supports dsPIC33E/PIC24E, dsPIC33F/PIC24H, PIC24FJ, PIC18FxxJxx, PIC32MX, PIC32MZ and PIC32MK families, but only some PICs have been tested.
+It theorically supports dsPIC33E/PIC24E, dsPIC33F/PIC24H, dsPIC33CK64/32, PIC24FJ, PIC18FxxJxx, PIC32MX, PIC32MZ and PIC32MK families, but only some PICs have been tested.
 
 ### Supported hosts
 
  Currently _picberry_ has support for the following host boards/processors:
 
-- the [Raspberry Pi](https://www.raspberrypi.org/)
-- Allwinner A10-based boards (like the [Cubieboard](http://cubieboard.org/))
+- The [Raspberry Pi](https://www.raspberrypi.org/).
+- Allwinner A10-based boards (like the [Cubieboard](http://cubieboard.org/)).
 - TI AM335x-based boards (like the [Beaglebone Black](https://beagleboard.org/black) or the [AM3359 ICEv2](http://www.ti.com/tool/tmdsice3359)).
+- Rock Pi S / S0 (and maybe other boards based on the RK3308).
 
 Support for additional boards and processors can be easily added, providing the following macro in a header file inside the _hosts_ folder:
 
