@@ -258,6 +258,8 @@ bool dspic33ck::read_device_id(void)
 			{
 				subfamily = SF_DSPIC33CKxxMC;
 			}
+			if (flags.debug)
+				fprintf(stderr, "program memory: 0x%06x, subfamily: %d\n", mem.program_memory_size, subfamily);
 
 			mem.location = (uint16_t*) calloc(mem.program_memory_size,sizeof(uint16_t));
 			mem.filled = (bool*) calloc(mem.program_memory_size,sizeof(bool));
@@ -435,10 +437,10 @@ void dspic33ck::bulk_erase(void)
 	send_cmd(0x8846B1);
 	send_cmd(0x200AA1);
 	send_cmd(0x8846B1);
-	if (subfamily == SF_DSPIC33CKxxMP)
-		send_cmd(0xA8F1A1);
-	else //if (subfamily == SF_DSPIC33CKxxMC)
-		send_cmd(0xA8E8D1);
+	//if (subfamily == SF_DSPIC33CKxxMP)
+	//	send_cmd(0xA8F1A1);
+	//else //if (subfamily == SF_DSPIC33CKxxMC)
+		send_cmd(0xA8E8D1); // There seems to be something wrong with the official documentation, it says it should be 0xA8F1A1 for xxMP chips, but only 0xA8E8D1 works, as for MC chips.
 	send_nop();
 	send_nop();
 	send_nop();
@@ -801,10 +803,10 @@ void dspic33ck::write(char *infile)
 		send_cmd(0x8846B1);
 		send_cmd(0x200AA1);
 		send_cmd(0x8846B1);
-		if (subfamily == SF_DSPIC33CKxxMP)
-			send_cmd(0xA8F1A1);
-		else //if (subfamily == SF_DSPIC33CKxxMC)
-			send_cmd(0xA8E8D1);
+		//if (subfamily == SF_DSPIC33CKxxMP)
+		//	send_cmd(0xA8F1A1);
+		//else //if (subfamily == SF_DSPIC33CKxxMC)
+			send_cmd(0xA8E8D1); // There seems to be something wrong with the official documentation, it says it should be 0xA8F1A1 for xxMP chips, but only 0xA8E8D1 works, as for MC chips.
 		send_nop();
 		send_nop();
 		send_nop();
@@ -909,10 +911,10 @@ void dspic33ck::write(char *infile)
 			send_cmd(0x8846B1);
 			send_cmd(0x200AA1);
 			send_cmd(0x8846B1);
-			if (subfamily == SF_DSPIC33CKxxMP)
-				send_cmd(0xA8F1A1);
-			else //if (subfamily == SF_DSPIC33CKxxMC)
-				send_cmd(0xA8E8D1);
+			//if (subfamily == SF_DSPIC33CKxxMP)
+			//	send_cmd(0xA8F1A1);
+			//else //if (subfamily == SF_DSPIC33CKxxMC)
+				send_cmd(0xA8E8D1); // There seems to be something wrong with the official documentation, it says it should be 0xA8F1A1 for xxMP chips, but only 0xA8E8D1 works, as for MC chips.
 			send_nop();
 			send_nop();
 			send_nop();
